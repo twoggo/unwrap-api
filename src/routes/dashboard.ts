@@ -178,38 +178,42 @@ dashboard.get("/dashboard", (c) => {
 </div>
 <script>
 async function loadDashboard() {
-  if (!_key) { window.location.href="/login"; return }
-  const usage = await api("/dashboard/api/usage")
-  const profile = await api("/dashboard/api/profile")
-  if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
-  const pct = Math.round((usage.totalCreditsUsed / usage.planLimit) * 100)
-  document.getElementById("content").innerHTML = \`
-    <div class="grid-2">
-      <div class="card stat fade-in"><div class="stat-value">\${usage.totalCreditsUsed.toLocaleString()}</div><div class="stat-label">Credits Used</div></div>
-      <div class="card stat fade-in"><div class="stat-value">\${usage.remaining.toLocaleString()}</div><div class="stat-label">Credits Remaining</div></div>
-    </div>
-    <div class="card fade-in">
-      <h2>Usage this month</h2>
-      <div style="height:8px;background:#1A1A2E;border-radius:4px;overflow:hidden;margin-bottom:16px"><div style="height:100%;width:\${pct}%;background:linear-gradient(90deg,#6366F1,#818CF8);border-radius:4px;transition:width .6s"></div></div>
-      <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#64748B"><span>\${usage.totalCreditsUsed.toLocaleString()} / \${usage.planLimit.toLocaleString()} credits</span><span>\${pct}%</span></div>
-    </div>
-    <div class="grid-2">
-      <div class="card fade-in">
-        <h2>Account</h2>
-        <table><tr><td style="color:#64748B">Plan</td><td><span class="badge badge-\${profile.tier}">\${usage.planName}</span></td></tr>
-        <tr><td style="color:#64748B">Email</td><td>\${profile.email}</td></tr>
-        <tr><td style="color:#64748B">Name</td><td>\${profile.name}</td></tr>
-        <tr><td style="color:#64748B">Joined</td><td>\${new Date(profile.createdAt).toLocaleDateString()}</td></tr></table>
+  try {
+    if (!_key) { window.location.href="/login"; return }
+    const usage = await api("/dashboard/api/usage")
+    const profile = await api("/dashboard/api/profile")
+    if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
+    const pct = Math.round((usage.totalCreditsUsed / usage.planLimit) * 100)
+    document.getElementById("content").innerHTML = \`
+      <div class="grid-2">
+        <div class="card stat fade-in"><div class="stat-value">\${usage.totalCreditsUsed.toLocaleString()}</div><div class="stat-label">Credits Used</div></div>
+        <div class="card stat fade-in"><div class="stat-value">\${usage.remaining.toLocaleString()}</div><div class="stat-label">Credits Remaining</div></div>
       </div>
       <div class="card fade-in">
-        <h2>Requests by endpoint</h2>
-        <div id="endpoints-list">\${Object.entries(usage.byEndpoint).length === 0 ? '<div class="empty">No requests yet. <a href="https://unwrap-api.mintlify.app/quickstart" style="color:#818CF8">Make your first call &rarr;</a></div>' : Object.entries(usage.byEndpoint).map(([ep, credits]) => '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1A1A2E;font-size:.85rem"><span style="color:#94A3B8">' + ep + '</span><span>' + credits + ' credits</span></div>').join('')}</div>
+        <h2>Usage this month</h2>
+        <div style="height:8px;background:#1A1A2E;border-radius:4px;overflow:hidden;margin-bottom:16px"><div style="height:100%;width:\${pct}%;background:linear-gradient(90deg,#6366F1,#818CF8);border-radius:4px;transition:width .6s"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:.85rem;color:#64748B"><span>\${usage.totalCreditsUsed.toLocaleString()} / \${usage.planLimit.toLocaleString()} credits</span><span>\${pct}%</span></div>
       </div>
-    </div>
-    <div class="card fade-in" style="text-align:center;padding:16px">
-      <span style="color:#64748B;font-size:.85rem">Rate limit: \${usage.planName === 'Free' ? '5' : usage.planName === 'Starter' ? '50' : usage.planName === 'Pro' ? '200' : '1000'} requests/second</span>
-    </div>
-  \`
+      <div class="grid-2">
+        <div class="card fade-in">
+          <h2>Account</h2>
+          <table><tr><td style="color:#64748B">Plan</td><td><span class="badge badge-\${profile.tier}">\${usage.planName}</span></td></tr>
+          <tr><td style="color:#64748B">Email</td><td>\${profile.email}</td></tr>
+          <tr><td style="color:#64748B">Name</td><td>\${profile.name}</td></tr>
+          <tr><td style="color:#64748B">Joined</td><td>\${new Date(profile.createdAt).toLocaleDateString()}</td></tr></table>
+        </div>
+        <div class="card fade-in">
+          <h2>Requests by endpoint</h2>
+          <div id="endpoints-list">\${Object.entries(usage.byEndpoint).length === 0 ? '<div class="empty">No requests yet. <a href="https://unwrap-api.mintlify.app/quickstart" style="color:#818CF8">Make your first call &rarr;</a></div>' : Object.entries(usage.byEndpoint).map(([ep, credits]) => '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1A1A2E;font-size:.85rem"><span style="color:#94A3B8">' + ep + '</span><span>' + credits + ' credits</span></div>').join('')}</div>
+        </div>
+      </div>
+      <div class="card fade-in" style="text-align:center;padding:16px">
+        <span style="color:#64748B;font-size:.85rem">Rate limit: \${usage.planName === 'Free' ? '5' : usage.planName === 'Starter' ? '50' : usage.planName === 'Pro' ? '200' : '1000'} requests/second</span>
+      </div>
+    \`
+  } catch(e) {
+    document.getElementById("content").innerHTML = '<div class="alert alert-error">Error loading dashboard: ' + e.message + '</div>'
+  }
 }
 loadDashboard()
 </script>`)
@@ -230,18 +234,22 @@ dashboard.get("/dashboard/keys", (c) => {
 <div id="createModal" style="display:none"></div>
 <script>
 async function loadKeys() {
-  if (!_key) { window.location.href="/login"; return }
-  const data = await api("/dashboard/api/keys")
-  if (data.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
-  if (!data.keys || data.keys.length === 0) {
-    document.getElementById("content").innerHTML='<div class="card empty">No API keys. <a href="#" onclick="showCreateKey()" style="color:#818CF8">Create your first key</a></div>'
-    return
+  try {
+    if (!_key) { window.location.href="/login"; return }
+    const data = await api("/dashboard/api/keys")
+    if (data.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
+    if (!data.keys || data.keys.length === 0) {
+      document.getElementById("content").innerHTML='<div class="card empty">No API keys. <a href="#" onclick="showCreateKey()" style="color:#818CF8">Create your first key</a></div>'
+      return
+    }
+    document.getElementById("content").innerHTML = \`
+      <div class="card fade-in"><table><tr><th>Label</th><th>Key</th><th>Status</th><th>Last Used</th><th>Created</th><th></th></tr>
+      \${data.keys.map(k => '<tr><td>' + k.label + '</td><td style="font-family:monospace;font-size:.8rem;color:#A5B4FC">' + k.keyPrefix + '...</td><td><span class="badge ' + (k.isActive ? 'badge-active' : 'badge-inactive') + '">' + (k.isActive ? 'Active' : 'Revoked') + '</span></td><td style="font-size:.85rem;color:#64748B">' + (k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : 'Never') + '</td><td style="font-size:.85rem;color:#64748B">' + new Date(k.createdAt).toLocaleDateString() + '</td><td>' + (k.isActive ? '<button class="btn btn-danger btn-sm" onclick="revokeKey(\'' + k.id + '\')">Revoke</button>' : '') + '</td></tr>').join('')}
+      </table></div>
+    \`
+  } catch(e) {
+    document.getElementById("content").innerHTML = '<div class="alert alert-error">Error: ' + e.message + '</div>'
   }
-  document.getElementById("content").innerHTML = \`
-    <div class="card fade-in"><table><tr><th>Label</th><th>Key</th><th>Status</th><th>Last Used</th><th>Created</th><th></th></tr>
-    \${data.keys.map(k => '<tr><td>' + k.label + '</td><td style="font-family:monospace;font-size:.8rem;color:#A5B4FC">' + k.keyPrefix + '...</td><td><span class="badge ' + (k.isActive ? 'badge-active' : 'badge-inactive') + '">' + (k.isActive ? 'Active' : 'Revoked') + '</span></td><td style="font-size:.85rem;color:#64748B">' + (k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : 'Never') + '</td><td style="font-size:.85rem;color:#64748B">' + new Date(k.createdAt).toLocaleDateString() + '</td><td>' + (k.isActive ? '<button class="btn btn-danger btn-sm" onclick="revokeKey(\'' + k.id + '\')">Revoke</button>' : '') + '</td></tr>').join('')}
-    </table></div>
-  \`
 }
 async function revokeKey(id) {
   if (!confirm("Revoke this key? It will stop working immediately.")) return
@@ -287,38 +295,42 @@ dashboard.get("/dashboard/billing", (c) => {
 </div>
 <script>
 async function loadBilling() {
-  if (!_key) { window.location.href="/login"; return }
-  const usage = await api("/dashboard/api/usage")
-  const plans = await api("/dashboard/api/plans")
-  if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key</div>'; return }
-  const currentTier = usage.tier
-  document.getElementById("content").innerHTML = \`
-    <div class="card fade-in">
-      <h2>Current Plan: \${usage.planName}</h2>
-      <p style="color:#64748B;font-size:.9rem;margin-bottom:16px">\${usage.price === 0 ? 'Free tier — upgrade for more credits and higher limits.' : '\\$' + (usage.price/100).toFixed(2) + '/month — ' + usage.planLimit.toLocaleString() + ' credits/month'}</p>
-      <div style="height:8px;background:#1A1A2E;border-radius:4px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:\${Math.round((usage.totalCreditsUsed/usage.planLimit)*100)}%;background:linear-gradient(90deg,#6366F1,#818CF8);border-radius:4px;transition:width .6s"></div></div>
-      <div style="font-size:.85rem;color:#64748B;margin-bottom:20px">\${usage.totalCreditsUsed.toLocaleString()} / \${usage.planLimit.toLocaleString()} credits used</div>
-    </div>
-    <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:16px;margin-top:32px">Compare Plans</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
-      \${Object.entries(plans.plans).filter(([t]) => t !== 'enterprise').map(([tier, plan]) => \`
-        <div class="card fade-in" style="\${tier === currentTier ? 'border-color:#6366F1' : ''}">
-          <div style="font-size:.8rem;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">\${plan.name}</div>
-          <div style="font-size:2rem;font-weight:700;margin-bottom:8px">\${plan.price === 0 ? 'Free' : '\\$' + (plan.price/100).toFixed(2)}</div>
-          <div style="font-size:.85rem;color:#94A3B8;margin-bottom:16px">\${plan.price > 0 ? '/month' : ''}</div>
-          <table style="font-size:.85rem">
-            <tr><td style="color:#64748B;padding:4px 0">Credits</td><td style="padding:4px 0">\${plan.monthlyCredits.toLocaleString()}/mo</td></tr>
-            <tr><td style="color:#64748B;padding:4px 0">Rate limit</td><td style="padding:4px 0">\${plan.rateLimit}/s</td></tr>
-            <tr><td style="color:#64748B;padding:4px 0">Max file</td><td style="padding:4px 0">\${plan.maxFileSizeMb}MB</td></tr>
-            <tr><td style="color:#64748B;padding:4px 0">Overage</td><td style="padding:4px 0">\\$\${(plan.overageCostPer1k/100).toFixed(2)}/1K</td></tr>
-          </table>
-          \${tier === currentTier ? '<div style="margin-top:16px;text-align:center;font-size:.85rem;color:#818CF8">Current plan</div>' : '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:16px" onclick="alert(\'Stripe checkout coming soon\')">Upgrade</button>'}
-        </div>\`).join('')}
-    </div>
-    <div class="card fade-in" style="margin-top:20px;text-align:center">
-      <p style="color:#64748B;font-size:.9rem">Need higher limits? <a href="mailto:support@unwrap.dev" style="color:#818CF8">Contact us</a> about Enterprise.</p>
-    </div>
-  \`
+  try {
+    if (!_key) { window.location.href="/login"; return }
+    const usage = await api("/dashboard/api/usage")
+    const plans = await api("/dashboard/api/plans")
+    if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key</div>'; return }
+    const currentTier = usage.tier
+    document.getElementById("content").innerHTML = \`
+      <div class="card fade-in">
+        <h2>Current Plan: \${usage.planName}</h2>
+        <p style="color:#64748B;font-size:.9rem;margin-bottom:16px">\${usage.price === 0 ? 'Free tier — upgrade for more credits and higher limits.' : '\\$' + (usage.price/100).toFixed(2) + '/month — ' + usage.planLimit.toLocaleString() + ' credits/month'}</p>
+        <div style="height:8px;background:#1A1A2E;border-radius:4px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:\${Math.round((usage.totalCreditsUsed/usage.planLimit)*100)}%;background:linear-gradient(90deg,#6366F1,#818CF8);border-radius:4px;transition:width .6s"></div></div>
+        <div style="font-size:.85rem;color:#64748B;margin-bottom:20px">\${usage.totalCreditsUsed.toLocaleString()} / \${usage.planLimit.toLocaleString()} credits used</div>
+      </div>
+      <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:16px;margin-top:32px">Compare Plans</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+        \${plans.plans.filter(p => p.tier !== 'enterprise').map(plan => \`
+          <div class="card fade-in" style="\${plan.tier === currentTier ? 'border-color:#6366F1' : ''}">
+            <div style="font-size:.8rem;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">\${plan.name}</div>
+            <div style="font-size:2rem;font-weight:700;margin-bottom:8px">\${plan.price === 0 ? 'Free' : '\\$' + (plan.price/100).toFixed(2)}</div>
+            <div style="font-size:.85rem;color:#94A3B8;margin-bottom:16px">\${plan.price > 0 ? '/month' : ''}</div>
+            <table style="font-size:.85rem">
+              <tr><td style="color:#64748B;padding:4px 0">Credits</td><td style="padding:4px 0">\${plan.monthlyCredits.toLocaleString()}/mo</td></tr>
+              <tr><td style="color:#64748B;padding:4px 0">Rate limit</td><td style="padding:4px 0">\${plan.rateLimit}/s</td></tr>
+              <tr><td style="color:#64748B;padding:4px 0">Max file</td><td style="padding:4px 0">\${plan.maxFileSizeMb}MB</td></tr>
+              <tr><td style="color:#64748B;padding:4px 0">Overage</td><td style="padding:4px 0">\\$\${(plan.overageCostPer1k/100).toFixed(2)}/1K</td></tr>
+            </table>
+            \${plan.tier === currentTier ? '<div style="margin-top:16px;text-align:center;font-size:.85rem;color:#818CF8">Current plan</div>' : '<button class="btn btn-primary btn-sm" style="width:100%;margin-top:16px" onclick="alert(\'Stripe checkout coming soon\')">Upgrade</button>'}
+          </div>\`).join('')}
+      </div>
+      <div class="card fade-in" style="margin-top:20px;text-align:center">
+        <p style="color:#64748B;font-size:.9rem">Need higher limits? <a href="mailto:support@unwrap.dev" style="color:#818CF8">Contact us</a> about Enterprise.</p>
+      </div>
+    \`
+  } catch(e) {
+    document.getElementById("content").innerHTML = '<div class="alert alert-error">Error: ' + e.message + '</div>'
+  }
 }
 loadBilling()
 </script>`)
