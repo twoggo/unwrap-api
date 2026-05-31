@@ -7,7 +7,7 @@ const convert = new Hono<{ Variables: Variables }>()
 
 const pdfToDocxSchema = z.object({
   url: z.string().url().optional(),
-  file: z.string().optional(), // base64 encoded
+  file: z.string().optional(),
 })
 
 const imageToWebpSchema = z.object({
@@ -16,50 +16,66 @@ const imageToWebpSchema = z.object({
   width: z.number().int().positive().optional(),
 })
 
-// POST /v1/convert/pdf-to-docx
 convert.post("/pdf-to-docx", usageMiddleware(5), async (c) => {
   const body = await c.req.json()
   const parsed = pdfToDocxSchema.safeParse(body)
-
   if (!parsed.success) {
-    return c.json(
-      { error: "validation_error", details: parsed.error.flatten() },
-      400,
-    )
+    return c.json({ error: "validation_error", details: parsed.error.flatten() }, 400)
   }
-
-  // Mock conversion - in production, call LibreOffice or a cloud converter
   return c.json({
     success: true,
     message: "PDF-to-DOCX conversion queued",
     estimatedTime: "~30s",
-    // In production: return a download URL or job ID
     downloadUrl: null,
     creditsUsed: 5,
   })
 })
 
-// POST /v1/convert/image-to-webp
 convert.post("/image-to-webp", usageMiddleware(2), async (c) => {
   const body = await c.req.json()
   const parsed = imageToWebpSchema.safeParse(body)
-
   if (!parsed.success) {
-    return c.json(
-      { error: "validation_error", details: parsed.error.flatten() },
-      400,
-    )
+    return c.json({ error: "validation_error", details: parsed.error.flatten() }, 400)
   }
 
-  // Mock conversion - in production, use sharp or a cloud image processor
-  return c.json({
-    success: true,
-    format: "webp",
-    quality: parsed.data.quality,
-    originalUrl: parsed.data.url,
-    convertedUrl: null, // In production: CDN URL to converted file
-    creditsUsed: 2,
-  })
+  try {
+    const response = await fetch(parsed.data.url)
+    if (!response.ok) {
+      return c.json({ error: "fetch_failed", message: "Could not fetch image from URL" }, 400)
+    }
+
+    const contentType = response.headers.get("content-type") ?? "image/jpeg"
+    const buffer = Buffer.from(await response.arrayBuffer())
+    const originalSizeBytes = buffer.length
+
+    let sharpInstance = (await import("sharp")).default(buffer)
+
+    if (parsed.data.width) {
+      sharpInstance = sharpInstance.resize(parsed.data.width)
+    }
+
+    const converted = await sharpInstance
+      .webp({ quality: parsed.data.quality })
+      .toBuffer()
+
+    const base64 = converted.toString("base64")
+    const dataUri = `data:image/webp;base64,${base64}`
+
+    return c.json({
+      success: true,
+      format: "webp",
+      quality: parsed.data.quality,
+      originalUrl: parsed.data.url,
+      convertedDataUri: dataUri,
+      originalSizeBytes,
+      convertedSizeBytes: converted.length,
+      reductionPercent: Number(((1 - converted.length / originalSizeBytes) * 100).toFixed(1)),
+      creditsUsed: 2,
+    })
+  } catch (err) {
+    console.error("Image conversion failed:", err)
+    return c.json({ error: "conversion_failed", message: "Image processing error" }, 500)
+  }
 })
 
 export { convert }
