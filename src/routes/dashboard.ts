@@ -122,11 +122,14 @@ async function signup() {
     <div class="modal" style="display:flex">
       <div class="modal-content fade-in">
         <h3>🎉 Your API Key is ready</h3>
-        <p>Save this key now. You won't see it again. Store it somewhere safe like a password manager.</p>
+        <p>This is the <strong>only time</strong> you will see this key. Copy it now and store it somewhere safe — like a password manager.</p>
         <div class="key-display">\${data.key}</div>
         <button class="btn btn-primary" style="width:100%" onclick="copyKey('\${data.key}')">Copy Key</button>
         <br><br>
-        <a href="/dashboard" class="btn btn-ghost" style="width:100%;text-align:center">Go to Dashboard</a>
+        <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:12px;text-align:left;font-size:.85rem;color:#FBBF24;line-height:1.5;margin-bottom:16px">
+          <strong>⚠️ Important:</strong> This key will be used to log you into your dashboard. <strong>Don't share it.</strong> Anyone with this key can use your API credits. <strong>Don't lose it</strong> — if you do, you'll need to generate a new key from the dashboard and revoke the old one.
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="window.location.href='/dashboard'">I understand — Continue to Dashboard &rarr;</button>
       </div>
     </div>\`
 }
