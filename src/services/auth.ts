@@ -61,6 +61,7 @@ export async function createApiKeyForAccount(
     accountId,
     keyPrefix: prefix,
     keyHash: hash,
+    rawKey: raw,
     label: label ?? "default",
     createdAt: new Date().toISOString(),
   })

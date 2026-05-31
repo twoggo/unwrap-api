@@ -22,6 +22,7 @@ export const apiKeys = sqliteTable("api_keys", {
     .references(() => accounts.id),
   keyPrefix: text("key_prefix").notNull(), // first 8 chars for identification
   keyHash: text("key_hash").notNull(),
+  rawKey: text("raw_key"), // stored for display only, not used for auth
   label: text("label").notNull().default("default"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
   lastUsedAt: text("last_used_at"),

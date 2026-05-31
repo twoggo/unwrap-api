@@ -14,6 +14,11 @@ import { dashboardApi } from "./routes/dashboard-api.js"
 import { publicApi } from "./routes/public.js"
 import type { Variables } from "./types/env.js"
 
+// Auto-migrate and seed database on startup
+await import("./scripts/auto-seed.js").catch((e) => {
+  console.error("Auto-seed failed:", e.message)
+})
+
 const app = new Hono<{ Variables: Variables }>()
 
 // Global middleware

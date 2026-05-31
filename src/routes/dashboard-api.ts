@@ -46,6 +46,7 @@ dashboardApi.get("/keys", async (c) => {
   const keys = await db
     .select({
       id: apiKeys.id,
+      rawKey: apiKeys.rawKey,
       keyPrefix: apiKeys.keyPrefix,
       label: apiKeys.label,
       isActive: apiKeys.isActive,

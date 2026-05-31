@@ -243,16 +243,16 @@ async function loadKeys() {
       return
     }
     document.getElementById("content").innerHTML = \`
-      <div class="card fade-in"><table><tr><th>Label</th><th>Key</th><th>Credits</th><th>Status</th><th>Last Used</th><th>Created</th><th></th></tr>
-      \${data.keys.map(k => '<tr><td>' + k.label + '</td><td style="font-family:monospace;font-size:.8rem;color:#A5B4FC;display:flex;align-items:center;gap:6px"><span>' + k.keyPrefix + '...</span><button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:.7rem" data-prefix="' + k.keyPrefix + '" onclick="copyPrefix(this)">Copy</button></td><td style="font-size:.85rem;color:#94A3B8">' + k.creditsUsed + '</td><td><span class="badge ' + (k.isActive ? 'badge-active' : 'badge-inactive') + '">' + (k.isActive ? 'Active' : 'Revoked') + '</span></td><td style="font-size:.85rem;color:#64748B">' + (k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : 'Never') + '</td><td style="font-size:.85rem;color:#64748B">' + new Date(k.createdAt).toLocaleDateString() + '</td><td>' + (k.isActive ? '<button class="btn btn-danger btn-sm" data-id="' + k.id + '" onclick="revokeKey(this.dataset.id)">Revoke</button>' : '') + '</td></tr>').join('')}
+      <div class="card fade-in"><table><tr><th>Label</th><th>Key</th><th></th><th>Credits</th><th>Status</th><th>Last Used</th><th>Created</th><th></th></tr>
+      \${data.keys.map(k => '<tr><td>' + k.label + '</td><td style="font-family:monospace;font-size:.75rem;color:#A5B4FC;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="' + k.rawKey + '">' + k.rawKey + '</td><td>' + (k.rawKey ? '<button class="btn btn-ghost btn-sm" style="padding:2px 8px;font-size:.7rem" data-key="' + k.rawKey + '" onclick="copyKey(this)">Copy</button>' : '') + '</td><td style="font-size:.85rem;color:#94A3B8">' + k.creditsUsed + '</td><td><span class="badge ' + (k.isActive ? 'badge-active' : 'badge-inactive') + '">' + (k.isActive ? 'Active' : 'Revoked') + '</span></td><td style="font-size:.85rem;color:#64748B">' + (k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleDateString() : 'Never') + '</td><td style="font-size:.85rem;color:#64748B">' + new Date(k.createdAt).toLocaleDateString() + '</td><td>' + (k.isActive ? '<button class="btn btn-danger btn-sm" data-id="' + k.id + '" onclick="revokeKey(this.dataset.id)">Revoke</button>' : '') + '</td></tr>').join('')}
       </table></div>
     \`
   } catch(e) {
     document.getElementById("content").innerHTML = '<div class="alert alert-error">Error: ' + e.message + '</div>'
   }
 }
-function copyPrefix(btn) {
-  navigator.clipboard.writeText(btn.dataset.prefix)
+function copyKey(btn) {
+  navigator.clipboard.writeText(btn.dataset.key)
   btn.textContent = "Copied!"
   setTimeout(() => btn.textContent = "Copy", 2000)
 }
