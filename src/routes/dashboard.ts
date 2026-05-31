@@ -7,14 +7,28 @@ import { eq } from "drizzle-orm"
 
 const dashboard = new Hono()
 
-function layout(title: string, body: string, extraHead = "") {
+function layout(title: string, body: string) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title} — Unwrap</title>
-${extraHead}
+<script>
+var _key = localStorage.getItem("uw_key") || ""
+var _base = window.location.origin
+async function api(path, opts) {
+  opts = opts || {}
+  var headers = { "Content-Type": "application/json" }
+  if (_key) headers["x-api-key"] = _key
+  var res = await fetch(_base + path, { ...opts, headers })
+  return res.json()
+}
+function logout() {
+  localStorage.removeItem("uw_key")
+  window.location.href = "/login"
+}
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#08080F;color:#E2E8F0;min-height:100vh}
@@ -24,7 +38,7 @@ nav .nav-links{display:flex;gap:20px;align-items:center}
 nav .nav-links a{color:#94A3B8;text-decoration:none;font-size:.9rem;padding:6px 14px;border-radius:6px;transition:.2s}
 nav .nav-links a:hover{color:#E2E8F0;background:#1A1A2E}
 nav .nav-links a.active{color:#818CF8;background:rgba(99,102,241,.1)}
-.btn{display:inline-block;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.btn{display:inline-block;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;text-decoration:none;border:none;cursor:pointer;transition:all .2s;text-align:center}
 .btn-primary{background:#6366F1;color:#fff}
 .btn-primary:hover{background:#4F46E5}
 .btn-danger{background:#DC2626;color:#fff}
@@ -65,27 +79,13 @@ td{padding:12px;font-size:.9rem;border-bottom:1px solid #1A1A2E}
 .modal-content h3{font-size:1.2rem;margin-bottom:8px}
 .modal-content p{color:#64748B;font-size:.9rem;margin-bottom:20px;line-height:1.5}
 .modal-content .key-display{background:#0A0A0F;padding:12px;border-radius:8px;font-family:monospace;font-size:.85rem;color:#A5B4FC;word-break:break-all;margin-bottom:16px}
+.disclaimer{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:16px;text-align:left;font-size:.85rem;color:#FBBF24;line-height:1.6;margin-bottom:16px}
+.disclaimer strong{color:#FCD34D}
 @media(max-width:640px){.grid-2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 ${body}
-<script>
-const API_KEY = localStorage.getItem("uw_key")
-const API_BASE = window.location.origin
-
-async function api(path, opts = {}) {
-  const headers = { "Content-Type": "application/json" }
-  if (API_KEY) headers["x-api-key"] = API_KEY
-  const res = await fetch(API_BASE + path, { ...opts, headers })
-  return res.json()
-}
-
-function logout() {
-  localStorage.removeItem("uw_key")
-  window.location.href = "/login"
-}
-</script>
 </body>
 </html>`
 }
@@ -126,8 +126,8 @@ async function signup() {
         <div class="key-display">\${data.key}</div>
         <button class="btn btn-primary" style="width:100%" onclick="copyKey('\${data.key}')">Copy Key</button>
         <br><br>
-        <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:12px;text-align:left;font-size:.85rem;color:#FBBF24;line-height:1.5;margin-bottom:16px">
-          <strong>⚠️ Important:</strong> This key will be used to log you into your dashboard. <strong>Don't share it.</strong> Anyone with this key can use your API credits. <strong>Don't lose it</strong> — if you do, you'll need to generate a new key from the dashboard and revoke the old one.
+        <div class="disclaimer">
+          ⚠️ <strong>Important:</strong> This key will be used to log you into your dashboard. <strong>Don't share it</strong> — anyone with this key can use your credits. <strong>Don't lose it</strong> — if you do, generate a new key from the dashboard and revoke this one.
         </div>
         <button class="btn btn-primary" style="width:100%" onclick="window.location.href='/dashboard'">I understand — Continue to Dashboard &rarr;</button>
       </div>
@@ -178,7 +178,7 @@ dashboard.get("/dashboard", (c) => {
 </div>
 <script>
 async function loadDashboard() {
-  if (!API_KEY) { window.location.href="/login"; return }
+  if (!_key) { window.location.href="/login"; return }
   const usage = await api("/dashboard/api/usage")
   const profile = await api("/dashboard/api/profile")
   if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
@@ -230,7 +230,7 @@ dashboard.get("/dashboard/keys", (c) => {
 <div id="createModal" style="display:none"></div>
 <script>
 async function loadKeys() {
-  if (!API_KEY) { window.location.href="/login"; return }
+  if (!_key) { window.location.href="/login"; return }
   const data = await api("/dashboard/api/keys")
   if (data.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key. <a href="/login" style="color:#818CF8">Sign in again</a></div>'; return }
   if (!data.keys || data.keys.length === 0) {
@@ -287,7 +287,7 @@ dashboard.get("/dashboard/billing", (c) => {
 </div>
 <script>
 async function loadBilling() {
-  if (!API_KEY) { window.location.href="/login"; return }
+  if (!_key) { window.location.href="/login"; return }
   const usage = await api("/dashboard/api/usage")
   const plans = await api("/dashboard/api/plans")
   if (usage.error) { document.getElementById("content").innerHTML='<div class="alert alert-error">Invalid API key</div>'; return }
