@@ -84,7 +84,7 @@ footer { margin-top: 32px; color: #475569; font-size: 0.85rem; }
     <small style="display:block;margin-top:8px;color:#64748B">Grab your API key from the server logs or run the seed script.</small>
   </div>
 
-  <a class="cta" href="https://docs.unwrap.dev" target="_blank">Read the Docs</a>
+  <a class="cta" href="https://unwrap-api.mintlify.app" target="_blank">Read the Docs</a>
 
   <footer>
     <code>curl -H "x-api-key: YOUR_KEY" https://api.unwrap.dev/v1/account/usage</code>
@@ -126,7 +126,7 @@ app.notFound((c) => {
   return c.json(
     {
       error: "not_found",
-      message: `Route ${c.req.method} ${c.req.path} not found. See docs at https://docs.unwrap.dev`,
+      message: `Route ${c.req.method} ${c.req.path} not found. See docs at https://unwrap-api.mintlify.app`,
     },
     404,
   )

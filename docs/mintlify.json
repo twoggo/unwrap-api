@@ -16,13 +16,13 @@
   },
   "topbarLinks": [
     {
-      "name": "Dashboard",
-      "url": "https://unwrap.dev/dashboard"
+      "name": "API",
+      "url": "https://unwrap-api.onrender.com"
     }
   ],
   "topbarCtaButton": {
     "name": "Get API Key",
-    "url": "https://unwrap.dev/signup"
+    "url": "https://unwrap-api.onrender.com"
   },
   "navigation": [
     {
