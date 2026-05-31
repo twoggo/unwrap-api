@@ -9,6 +9,9 @@ import { screenshot } from "./routes/screenshot.js"
 import { fuel } from "./routes/fuel.js"
 import { account } from "./routes/account.js"
 import { webhook } from "./routes/webhook.js"
+import { dashboard } from "./routes/dashboard.js"
+import { dashboardApi } from "./routes/dashboard-api.js"
+import { publicApi } from "./routes/public.js"
 import type { Variables } from "./types/env.js"
 
 const app = new Hono<{ Variables: Variables }>()
@@ -103,8 +106,8 @@ nav a:hover{border-color:#6366F1;color:#E2E8F0}
   <h1>One API. Zero complexity.<br>Everything else, we handle.</h1>
   <p>A single HTTP endpoint to convert images, capture screenshots, scrape real-time data, and more. No separate SDKs. No multiple vendor accounts. One key, one bill, done.</p>
   <div class="hero-cta">
-    <a class="btn btn-primary" href="https://unwrap-api.mintlify.app">Read the Docs</a>
-    <a class="btn btn-secondary" href="#features">See what it does</a>
+    <a class="btn btn-primary" href="/signup">Get API Key &rarr;</a>
+    <a class="btn btn-secondary" href="https://unwrap-api.mintlify.app">Read the Docs</a>
   </div>
 </section>
 
@@ -220,6 +223,13 @@ app.get("/health", (c) => {
 
 // Public routes
 app.route("/webhook", webhook)
+app.route("/api", publicApi)
+
+// Dashboard routes (HTML pages)
+app.route("/", dashboard)
+
+// Dashboard API routes
+app.route("/dashboard/api", dashboardApi)
 
 // API v1 routes
 const v1 = new Hono()
