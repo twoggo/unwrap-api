@@ -1,0 +1,78 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Unwrap API",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5",
+    "background": {
+      "dark": "#0A0A0F"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://unwrap.dev/dashboard"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get API Key",
+    "url": "https://unwrap.dev/signup"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started/introduction",
+        "getting-started/quickstart",
+        "getting-started/authentication"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview",
+        "api-reference/convert-pdf-to-docx",
+        "api-reference/convert-image-to-webp",
+        "api-reference/screenshot",
+        "api-reference/fuel-prices",
+        "api-reference/account-usage",
+        "api-reference/account-keys",
+        "api-reference/errors"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/rate-limits",
+        "guides/billing",
+        "guides/best-practices"
+      ]
+    },
+    {
+      "group": "SDKs & Libraries",
+      "pages": [
+        "sdks/nodejs",
+        "sdks/python",
+        "sdks/curl"
+      ]
+    },
+    {
+      "group": "Changelog",
+      "pages": [
+        "changelog/overview"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/unwrapapi",
+    "github": "https://github.com/unwrapapi",
+    "linkedin": "https://linkedin.com/company/unwrapapi"
+  },
+  "backgroundImage": "/background.png"
+}

@@ -1,0 +1,67 @@
+---
+title: "Convert PDF to DOCX"
+description: "Convert PDF files to editable Microsoft Word documents."
+---
+
+Convert PDF files to DOCX format with a single API call.
+
+**Credits per request: 5**
+
+## Request
+
+<CodeGroup>
+```bash curl
+curl -X POST https://api.unwrap.dev/v1/convert/pdf-to-docx \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/document.pdf"
+  }'
+```
+
+```javascript Node.js
+const response = await fetch("https://api.unwrap.dev/v1/convert/pdf-to-docx", {
+  method: "POST",
+  headers: {
+    "X-API-Key": "uw_your_api_key_here",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    url: "https://example.com/document.pdf",
+  }),
+})
+const data = await response.json()
+```
+</CodeGroup>
+
+## Body Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | Yes* | Public URL of the PDF to convert |
+| `file` | string | Yes* | Base64-encoded PDF content |
+| `ocr` | boolean | No | Enable OCR for scanned PDFs (adds 2 credits) |
+
+*\*Either `url` or `file` must be provided.*
+
+## Response
+
+```json
+{
+  "success": true,
+  "downloadUrl": "https://cdn.unwrap.dev/conversions/x1y2z3.docx",
+  "pageCount": 12,
+  "originalSizeBytes": 245000,
+  "convertedSizeBytes": 180000,
+  "creditsUsed": 5
+}
+```
+
+## Limits
+
+| Plan | Max File Size |
+|------|--------------|
+| Free | 5 MB |
+| Starter | 25 MB |
+| Pro | 100 MB |
+| Enterprise | 500 MB |

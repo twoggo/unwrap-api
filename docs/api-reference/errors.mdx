@@ -1,0 +1,94 @@
+---
+title: "Errors"
+description: "Standard error codes and troubleshooting."
+---
+
+All errors return a JSON response with an `error` code and `message`.
+
+## HTTP Status Codes
+
+| Status | Meaning |
+|--------|---------|
+| 200 | Success |
+| 400 | Bad request — invalid parameters |
+| 401 | Unauthorized — missing or invalid API key |
+| 402 | Payment Required — insufficient credits |
+| 404 | Not found — invalid endpoint |
+| 429 | Rate limit exceeded — slow down |
+| 500 | Internal server error |
+
+## Error Codes
+
+### `unauthorized` (401)
+The `X-API-Key` header is missing or the key is invalid.
+
+```json
+{
+  "error": "unauthorized",
+  "message": "Missing X-API-Key header. Get your API key at https://unwrap.dev"
+}
+```
+
+### `invalid_key` (401)
+The API key provided does not exist or has been deactivated.
+
+```json
+{
+  "error": "invalid_key",
+  "message": "Invalid or deactivated API key."
+}
+```
+
+### `insufficient_credits` (402)
+You have exhausted your plan's monthly credit allocation.
+
+```json
+{
+  "error": "insufficient_credits",
+  "message": "You've used all 10,000 monthly credits. Upgrade your plan or wait for reset.",
+  "tier": "starter",
+  "planLimit": 10000
+}
+```
+
+### `rate_limit_exceeded` (429)
+You are sending requests faster than your plan allows.
+
+```json
+{
+  "error": "rate_limit_exceeded",
+  "message": "Too many requests. Upgrade your plan for higher limits.",
+  "tier": "starter",
+  "limit": 50
+}
+```
+
+### `validation_error` (400)
+Request parameters failed validation.
+
+```json
+{
+  "error": "validation_error",
+  "details": {
+    "fieldErrors": {
+      "url": ["Required"],
+      "quality": ["Expected number, received string"]
+    }
+  }
+}
+```
+
+## Retry Strategy
+
+For 429 and 500 errors, implement exponential backoff:
+
+```javascript
+async function fetchWithRetry(url, options, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    const response = await fetch(url, options)
+    if (response.status !== 429 && response.status < 500) return response
+    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000))
+  }
+  throw new Error("Max retries exceeded")
+}
+```

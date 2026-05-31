@@ -1,0 +1,50 @@
+---
+title: "Screenshot"
+description: "Capture clean, full-page website screenshots programmatically."
+---
+
+Capture high-quality screenshots of any website. Supports full-page captures,
+custom viewport sizes, and multiple output formats.
+
+**Credits per request: 3**
+
+## Request
+
+```bash
+curl -X POST https://api.unwrap.dev/v1/screenshot \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "width": 1280,
+    "height": 720,
+    "fullPage": true,
+    "format": "png",
+    "delay": 1000
+  }'
+```
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `url` | string | Yes | — | The URL to screenshot |
+| `width` | integer | No | `1280` | Viewport width (320–3840) |
+| `height` | integer | No | `720` | Viewport height (240–2160) |
+| `fullPage` | boolean | No | `false` | Capture the full page height |
+| `format` | string | No | `png` | Output format: `png`, `jpeg`, or `webp` |
+| `delay` | integer | No | `0` | Wait milliseconds before capture |
+
+## Response
+
+```json
+{
+  "success": true,
+  "screenshotUrl": "https://cdn.unwrap.dev/screenshots/x1y2z3.png",
+  "width": 1280,
+  "height": 720,
+  "format": "png",
+  "fullPage": true,
+  "creditsUsed": 3
+}
+```

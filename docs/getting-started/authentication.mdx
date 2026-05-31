@@ -1,0 +1,55 @@
+---
+title: "Authentication"
+description: "Every request must be authenticated with an API key."
+---
+
+Unwrap uses API keys for authentication. Pass your key via the `X-API-Key`
+header on every request.
+
+## Obtaining an API Key
+
+1. Create a free account at [unwrap.dev](https://unwrap.dev)
+2. Navigate to **Dashboard > API Keys**
+3. Click **Generate New Key**
+4. Copy the key immediately — it is shown only once
+
+## Using Your API Key
+
+Include the key in all requests:
+
+```bash
+curl -H "X-API-Key: uw_your_api_key_here" https://api.unwrap.dev/v1/account/usage
+```
+
+## Key Security
+
+- **Treat API keys like passwords.** Never commit them to version control.
+- Use **environment variables** to store keys in your application.
+- Rotate keys regularly from the dashboard.
+- Create **separate keys** for development and production environments.
+
+### What happens if my key is compromised?
+
+Revoke the compromised key immediately from the dashboard and generate a new
+one. The old key will stop working within 60 seconds.
+
+## Key Prefixes
+
+All Unwrap API keys start with `uw_` followed by a unique identifier. The
+prefix helps you identify Unwrap keys in your codebase:
+
+- `uw_live_*` — Production keys
+- `uw_test_*` — Test / development keys
+
+## Rate Limiting
+
+Each request counts against your plan's rate limit. See
+[Rate Limits & Usage](/guides/rate-limits) for details.
+
+## Errors
+
+| Status | Error Code | Meaning |
+|--------|-----------|---------|
+| 401 | `unauthorized` | Missing or invalid API key |
+| 402 | `insufficient_credits` | Monthly credit limit reached |
+| 429 | `rate_limit_exceeded` | Too many requests per second |

@@ -1,0 +1,37 @@
+---
+title: "Python SDK"
+description: "Using Unwrap from Python."
+---
+
+Install the Python client:
+
+```bash
+pip install unwrap-sdk
+```
+
+## Usage
+
+```python
+from unwrap import Unwrap
+
+client = Unwrap(api_key="uw_your_api_key_here")
+
+# Convert an image to WebP
+result = client.convert.image_to_webp(
+    url="https://example.com/photo.jpg",
+    quality=80,
+)
+print(result.converted_url)
+
+# Capture a screenshot
+screenshot = client.screenshot.capture(
+    url="https://example.com",
+    full_page=True,
+    format="webp",
+)
+print(screenshot.screenshot_url)
+
+# Check usage
+usage = client.account.usage()
+print(f"Used {usage.total_credits_used} of {usage.plan_limit} credits")
+```

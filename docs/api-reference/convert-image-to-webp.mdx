@@ -1,0 +1,46 @@
+---
+title: "Convert Image to WebP"
+description: "Compress and convert images to WebP format for faster web loading."
+---
+
+Convert and optimize images to WebP format. Ideal for websites, e-commerce
+platforms, and content management systems.
+
+**Credits per request: 2**
+
+## Request
+
+```bash
+curl -X POST https://api.unwrap.dev/v1/convert/image-to-webp \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/photo.jpg",
+    "quality": 80,
+    "width": 1200
+  }'
+```
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `url` | string | Yes | — | Public URL of the source image |
+| `quality` | integer | No | `80` | Compression quality (1–100) |
+| `width` | integer | No | — | Resize width in pixels (preserves aspect ratio) |
+
+## Response
+
+```json
+{
+  "success": true,
+  "format": "webp",
+  "quality": 80,
+  "originalUrl": "https://example.com/photo.jpg",
+  "convertedUrl": "https://cdn.unwrap.dev/conversions/a1b2c3d4.webp",
+  "originalSizeBytes": 520000,
+  "convertedSizeBytes": 89000,
+  "reductionPercent": 82.9,
+  "creditsUsed": 2
+}
+```

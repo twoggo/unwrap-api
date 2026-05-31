@@ -1,0 +1,67 @@
+---
+title: "Best Practices"
+description: "Tips for getting the most out of the Unwrap API."
+---
+
+## Error Handling
+
+Always check the `error` field in responses and implement appropriate error
+handling:
+
+```javascript
+const response = await fetch("https://api.unwrap.dev/v1/screenshot", {
+  method: "POST",
+  headers: {
+    "X-API-Key": process.env.UNWRAP_API_KEY,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ url: "https://example.com" }),
+})
+
+if (!response.ok) {
+  const error = await response.json()
+  switch (error.error) {
+    case "insufficient_credits":
+      // Notify admin or switch to backup service
+      break
+    case "rate_limit_exceeded":
+      // Implement backoff
+      break
+    default:
+      // Log and retry
+  }
+}
+```
+
+## Retry with Backoff
+
+Use exponential backoff for transient failures:
+
+```javascript
+async function unwrapFetch(endpoint, body, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    const res = await fetch(`https://api.unwrap.dev/v1${endpoint}`, {
+      method: "POST",
+      headers: {
+        "X-API-Key": process.env.UNWRAP_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+    if (res.ok) return res.json()
+    if (res.status !== 429 && res.status < 500) break
+    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000))
+  }
+  throw new Error("Unwrap API request failed")
+}
+```
+
+## Monitor Your Usage
+
+Check the `X-Remaining-Credits` header on every response and set up alerts
+when you reach 80% consumption.
+
+## Key Rotation
+
+Rotate API keys every 90 days. Use the dashboard to generate new keys and
+deactivate old ones. Keep separate keys for development and production.

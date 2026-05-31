@@ -1,0 +1,45 @@
+---
+title: "cURL Examples"
+description: "Quick cURL references for all endpoints."
+---
+
+## Convert PDF to DOCX
+
+```bash
+curl -X POST https://api.unwrap.dev/v1/convert/pdf-to-docx \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/doc.pdf"}'
+```
+
+## Convert Image to WebP
+
+```bash
+curl -X POST https://api.unwrap.dev/v1/convert/image-to-webp \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/photo.jpg", "quality": 80}'
+```
+
+## Screenshot
+
+```bash
+curl -X POST https://api.unwrap.dev/v1/screenshot \
+  -H "X-API-Key: uw_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "fullPage": true, "format": "webp"}'
+```
+
+## Fuel Prices
+
+```bash
+curl "https://api.unwrap.dev/v1/fuel/prices?lat=40.7128&lng=-74.006&radius=5" \
+  -H "X-API-Key: uw_your_api_key_here"
+```
+
+## Account Usage
+
+```bash
+curl https://api.unwrap.dev/v1/account/usage \
+  -H "X-API-Key: uw_your_api_key_here"
+```

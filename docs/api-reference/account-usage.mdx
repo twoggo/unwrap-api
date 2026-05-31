@@ -1,0 +1,32 @@
+---
+title: "Account Usage"
+description: "View your current billing period usage."
+---
+
+Returns your current month's credit usage, organized by endpoint.
+
+**Credits per request: 0 (free)**
+
+## Request
+
+```bash
+curl https://api.unwrap.dev/v1/account/usage \
+  -H "X-API-Key: uw_your_api_key_here"
+```
+
+## Response
+
+```json
+{
+  "tier": "starter",
+  "planLimit": 10000,
+  "totalCreditsUsed": 342,
+  "totalRequests": 187,
+  "byEndpoint": {
+    "/v1/convert/image-to-webp": 120,
+    "/v1/screenshot": 180,
+    "/v1/fuel/prices": 42
+  },
+  "remaining": 9658
+}
+```

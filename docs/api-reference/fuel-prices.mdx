@@ -1,0 +1,53 @@
+---
+title: "Fuel Prices"
+description: "Get real-time local fuel prices near a specified location."
+---
+
+Fetch current fuel prices from stations near a given latitude/longitude.
+
+**Credits per request: 2**
+
+## Request
+
+```bash
+curl "https://api.unwrap.dev/v1/fuel/prices?lat=40.7128&lng=-74.0060&radius=5&fuelType=regular" \
+  -H "X-API-Key: uw_your_api_key_here"
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `lat` | float | Yes | — | Latitude (−90 to 90) |
+| `lng` | float | Yes | — | Longitude (−180 to 180) |
+| `radius` | integer | No | `10` | Search radius in miles (1–50) |
+| `fuelType` | string | No | `regular` | `regular`, `premium`, `diesel`, or `all` |
+
+## Response
+
+```json
+{
+  "success": true,
+  "location": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "stations": [
+    {
+      "name": "Shell",
+      "address": "123 Main St, New York, NY 10001",
+      "price": 3.45,
+      "fuelType": "regular",
+      "lastUpdated": "2026-05-30T14:30:00Z"
+    },
+    {
+      "name": "Exxon",
+      "address": "456 Park Ave, New York, NY 10002",
+      "price": 3.52,
+      "fuelType": "regular",
+      "lastUpdated": "2026-05-30T14:25:00Z"
+    }
+  ],
+  "creditsUsed": 2
+}
+```

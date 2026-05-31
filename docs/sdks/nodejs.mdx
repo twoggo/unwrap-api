@@ -1,0 +1,47 @@
+---
+title: "Node.js SDK"
+description: "Using Unwrap from Node.js and TypeScript."
+---
+
+Install the Unwrap client library:
+
+```bash
+npm install unwrap-sdk
+```
+
+## Usage
+
+```javascript
+import Unwrap from "unwrap-sdk"
+
+const unwrap = new Unwrap({
+  apiKey: process.env.UNWRAP_API_KEY,
+})
+
+// Convert an image to WebP
+const result = await unwrap.convert.imageToWebp({
+  url: "https://example.com/photo.jpg",
+  quality: 80,
+})
+console.log(result.convertedUrl)
+
+// Capture a screenshot
+const screenshot = await unwrap.screenshot.capture({
+  url: "https://example.com",
+  fullPage: true,
+  format: "webp",
+})
+console.log(screenshot.screenshotUrl)
+
+// Get fuel prices
+const prices = await unwrap.fuel.prices({
+  lat: 40.7128,
+  lng: -74.006,
+  radius: 5,
+})
+console.log(prices.stations)
+
+// Check usage
+const usage = await unwrap.account.usage()
+console.log(`Used ${usage.totalCreditsUsed} of ${usage.planLimit} credits`)
+```

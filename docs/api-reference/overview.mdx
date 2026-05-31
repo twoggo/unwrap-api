@@ -1,0 +1,58 @@
+---
+title: "API Reference Overview"
+description: "Complete reference for all Unwrap API endpoints."
+---
+
+All API requests are made to:
+
+```
+https://api.unwrap.dev/v1
+```
+
+Responses are always JSON. Every successful response includes a `creditsUsed`
+field showing how many credits the request consumed.
+
+## Base URL
+
+| Environment | URL |
+|------------|-----|
+| Production | `https://api.unwrap.dev/v1` |
+| Staging | `https://staging.api.unwrap.dev/v1` |
+
+## Common Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `X-API-Key` | Yes | Your API key |
+| `Content-Type` | Yes | `application/json` |
+
+## Standard Response Format
+
+```json
+{
+  "success": true,
+  "creditsUsed": 3,
+  "...": "..."
+}
+```
+
+## Error Format
+
+```json
+{
+  "error": "error_code",
+  "message": "Human-readable description of the problem."
+}
+```
+
+## Endpoints
+
+| Method | Path | Credits | Description |
+|--------|------|---------|-------------|
+| POST | `/convert/pdf-to-docx` | 5 | Convert PDF to editable DOCX |
+| POST | `/convert/image-to-webp` | 2 | Convert/compress images to WebP |
+| POST | `/screenshot` | 3 | Capture a website screenshot |
+| GET | `/fuel/prices` | 2 | Get local fuel prices |
+| GET | `/account/usage` | 0 | View current billing period usage |
+| POST | `/account/keys` | 0 | Create a new API key |
+| GET | `/account/profile` | 0 | View account details |
