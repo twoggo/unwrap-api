@@ -2,8 +2,8 @@ import { Hono } from "hono"
 import { z } from "zod"
 import { db } from "../db/index.js"
 import { accounts } from "../db/schema.js"
-import { apiKeys } from "../db/schema.js"
-import { eq, and } from "drizzle-orm"
+import { apiKeys, usageLogs } from "../db/schema.js"
+import { eq, and, gte, lt, sql } from "drizzle-orm"
 import { createApiKeyForAccount, validateApiKey } from "../services/auth.js"
 import { getCurrentUsage } from "../services/usage.js"
 import { PLANS } from "../types/index.js"
@@ -39,6 +39,10 @@ dashboardApi.get("/usage", async (c) => {
 
 dashboardApi.get("/keys", async (c) => {
   const accountId = c.get("accountId") as string
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString()
+
   const keys = await db
     .select({
       id: apiKeys.id,
@@ -47,9 +51,20 @@ dashboardApi.get("/keys", async (c) => {
       isActive: apiKeys.isActive,
       lastUsedAt: apiKeys.lastUsedAt,
       createdAt: apiKeys.createdAt,
+      creditsUsed: sql<number>`COALESCE(SUM(${usageLogs.creditsUsed}), 0)`,
+      requestCount: sql<number>`COUNT(${usageLogs.id})`,
     })
     .from(apiKeys)
+    .leftJoin(
+      usageLogs,
+      and(
+        eq(usageLogs.apiKeyId, apiKeys.id),
+        gte(usageLogs.timestamp, startOfMonth),
+        lt(usageLogs.timestamp, startOfNextMonth),
+      ),
+    )
     .where(eq(apiKeys.accountId, accountId))
+    .groupBy(apiKeys.id)
     .orderBy(apiKeys.createdAt)
   return c.json({ keys })
 })
