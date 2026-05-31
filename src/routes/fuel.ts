@@ -24,24 +24,30 @@ function seededRandom(seed: number): () => number {
 }
 
 function getRegionalBasePrice(lat: number, lng: number): { regular: number; premium: number; diesel: number } {
-  // Rough US regional pricing based on lat/lng
-  if (lat > 40 && lng < -100) {
-    // Midwest — cheaper
-    return { regular: 3.15, premium: 3.65, diesel: 3.45 }
-  } else if (lat > 35 && lng < -115) {
-    // West Coast — expensive
+  // Check most specific regions first, ordered by longitude (west to east)
+  if (lat > 32 && lng < -115) {
+    // West Coast (LA, SF, Seattle, Portland) — most expensive US
     return { regular: 4.45, premium: 5.05, diesel: 4.85 }
-  } else if (lat > 30 && lng < -80) {
-    // Southeast — moderate
-    return { regular: 3.25, premium: 3.75, diesel: 3.55 }
-  } else if (lat > 40 && lng < -70) {
-    // Northeast — moderate-high
+  } else if (lat > 34 && lng < -100) {
+    // Mountain / Southwest (Denver, Phoenix, Vegas, Salt Lake)
+    return { regular: 3.55, premium: 4.05, diesel: 3.75 }
+  } else if (lat > 38 && lng < -90) {
+    // Midwest (Chicago, Detroit, Minneapolis) — cheaper
+    return { regular: 3.15, premium: 3.65, diesel: 3.45 }
+  } else if (lat > 28 && lng < -80) {
+    // South / Southeast (Texas, Florida, Atlanta)
+    return { regular: 3.05, premium: 3.55, diesel: 3.35 }
+  } else if (lat > 38 && lng < -70) {
+    // Northeast (NYC, Boston, Philly)
     return { regular: 3.55, premium: 4.05, diesel: 3.85 }
+  } else if (lat > 20 && lng < -60) {
+    // Rest of US / Canada
+    return { regular: 3.35, premium: 3.85, diesel: 3.65 }
   } else if (lng > -10) {
-    // Europe — expensive
+    // Europe
     return { regular: 6.50, premium: 7.20, diesel: 6.80 }
   } else {
-    // Default US average
+    // Default
     return { regular: 3.35, premium: 3.85, diesel: 3.65 }
   }
 }
